@@ -6,7 +6,8 @@ public class RunGK : StateMachineBehaviour
 
     private static readonly int DirStrafeX = Animator.StringToHash("dir_strafe_x");
     private static readonly int DirStrafeZ = Animator.StringToHash("dir_strafe_z");
-    private static readonly int Idle = Animator.StringToHash("idle");
+    //private static readonly int Idle = Animator.StringToHash("idle");
+    private static readonly int Idle = Animator.StringToHash("Idle");
     private Ball ball;
     private CapsuleCollider capsuleCollider;
     private InGame inGame;
@@ -52,7 +53,8 @@ public class RunGK : StateMachineBehaviour
             if (Vector3.Distance(trans.position, player.initialPosition) < 1f)
             {
                 player.go_origin = false;
-                animator.SetTrigger(Idle);
+                animator.SetBool("run", false);
+                animator.SetTrigger(Idle);                
             }
 
             return;
@@ -69,7 +71,7 @@ public class RunGK : StateMachineBehaviour
             var distInit = (player.initialPosition - player.transform.position).magnitude;
             if (distInit > Globals.distanceToBackOrigin)
             {
-                player.go_origin = true;
+                player.go_origin = true;                
             }
         }
     }

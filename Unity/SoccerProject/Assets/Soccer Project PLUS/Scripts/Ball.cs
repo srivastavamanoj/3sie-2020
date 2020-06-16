@@ -28,6 +28,8 @@ public class Ball : MonoBehaviour
     {
         inputManager = FindObjectOfType<InputManager>();
         RB = GetComponent<Rigidbody>();
+
+        RB.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
     }
 
     // Update is called once per frame

@@ -358,11 +358,13 @@ public class InGame : MonoBehaviour
 
                     foreach (Player go in team1.players)
                     {
-                        go.animator.Play("Idle");
+                        //go.animator.Play("Idle");
+                        go.animator.Play("idle");
                     }
                     foreach (Player go in team2.players)
                     {
-                        go.animator.Play("Idle");
+                        //go.animator.Play("Idle");
+                        go.animator.Play("idle");
                     }
 
                     Ball.owner = null;
@@ -381,8 +383,10 @@ public class InGame : MonoBehaviour
                         go.animator.Play("idle");
                     }
 
-                    team1.players[0].animator.SetTrigger(Idle);
-                    team2.players[0].animator.SetTrigger(Idle);
+                    //team1.players[0].animator.SetTrigger(Idle);
+                    //team2.players[0].animator.SetTrigger(Idle);
+                    team1.players[0].animator.SetTrigger("Idle");
+                    team2.players[0].animator.SetTrigger("Idle");
 
                     timeToKickOff -= Time.deltaTime;
 
