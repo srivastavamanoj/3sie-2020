@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
+
 public class Player : MonoBehaviour
 {
     public static Player kickOffer;
@@ -52,6 +53,7 @@ public class Player : MonoBehaviour
     public static readonly int RunWithBall = Animator.StringToHash("RunWithBall");
     private Color originalColor;
     private float posYfloor;
+    
 
     #endregion Private Fields
 
@@ -88,7 +90,7 @@ public class Player : MonoBehaviour
     }
 
     public void OnPass(int indexAction)
-    {
+    {        
         switch (indexAction)
         {
             case 2:

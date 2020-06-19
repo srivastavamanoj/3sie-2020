@@ -186,8 +186,9 @@ public class InGame : MonoBehaviour
 
                     if (scorerTime.minutes > 90.0f && firstHalf == 2)
                     {
+                        // Match is Over
                         PlayerPrefs.SetInt("ScoreLocal", scoreLocal);
-                        PlayerPrefs.SetInt("ScoreVisit", scoreVisiting);
+                        PlayerPrefs.SetInt("ScoreVisit", scoreVisiting);                        
                         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
                     }
 
@@ -266,7 +267,7 @@ public class InGame : MonoBehaviour
 
                     whoLastTouched = lastTouched;
 
-                    whoLastTouched = team2.players[0];
+                    //whoLastTouched = team2.players[0];
 
                     if (!cornerTrigger.CompareTag(whoLastTouched.tag))
                     {
