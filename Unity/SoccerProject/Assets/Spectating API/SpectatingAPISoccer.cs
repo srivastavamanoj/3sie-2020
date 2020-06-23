@@ -16,7 +16,21 @@ public class SpectatingAPISoccer : MonoBehaviour
     private ScorerTimeHUD scorerTimeHUD;
     private GameObject ball;
     private Ball ballScript;
+    
+    // Delegates and events
+    public delegate void OnGoalDelegate();    
+    public delegate void OnPassDelegate();
+    public delegate void OnShootDelegate();
+    public delegate void OnFirstHalfStartedDelegate();
+    public delegate void OnSecondHalfStartedDelegate();
+    public delegate void OnMatchFinishedDelegate();
 
+    public static event OnGoalDelegate goalEvent;
+    public static event OnPassDelegate passEvent;
+    public static event OnShootDelegate shootEvent;
+    public static event OnFirstHalfStartedDelegate firstHalfStartedEvent;
+    public static event OnSecondHalfStartedDelegate secondHalfStartedEvent;
+    public static event OnMatchFinishedDelegate matchFinishedEvent;
 
 
     void Start()
@@ -25,9 +39,18 @@ public class SpectatingAPISoccer : MonoBehaviour
         scorerTimeHUD = GameObject.Find("Time").GetComponent<ScorerTimeHUD>();
         ball = GameObject.Find("soccer_ball");
         ballScript = ball.GetComponent<Ball>();
+
+        //Subscription to different events 
+        Goal.goalEvent += OnGoal;
+        Player.passEvent += OnPass;
+        Player.shootEvent += OnShoot;
+        InGame.firstHalfStartedEvent += OnFirstHalfStarted;
+        InGame.secondHalfStartedEvent += OnSecondHalfStarted;
+        InGame.matchFinishedEvent += OnMatchFinished;
     }
 
 
+    #region Accessing Game Data
     // Returns the state of the game
     public InGame.InGameState GetGameState()
     {
@@ -65,7 +88,7 @@ public class SpectatingAPISoccer : MonoBehaviour
     }
 
 
-    // Returns a number that represents the half of the match (0 = first half; 1 = second half; 2 = match finished)
+    // Returns a number that represents the half of the match (0 = match not started; 1 = first half; 2 = second half)
     public int GetMatchHalf()
     {
         return inGame.firstHalf;
@@ -91,6 +114,56 @@ public class SpectatingAPISoccer : MonoBehaviour
     {
         return Ball.owner.gameObject;
     }
+    #endregion
 
-    
+
+    #region Game Event Callbacks
+    private void OnGoal()
+    {
+        goalEvent();
+    }
+
+
+    private void OnPass()
+    {
+        passEvent?.Invoke();
+    }
+
+
+    private void OnShoot()
+    {
+        shootEvent?.Invoke();
+    }
+
+
+    private void OnFirstHalfStarted()
+    {
+        firstHalfStartedEvent?.Invoke();
+    }
+
+
+    private void OnSecondHalfStarted()
+    {
+        secondHalfStartedEvent?.Invoke();
+    }
+
+
+    private void OnMatchFinished()
+    {
+        matchFinishedEvent?.Invoke();
+    }
+
+
+    private void OnCorner()
+    {
+
+    }
+
+
+    private void OnThrownIn()
+    {
+
+    }   
+
+    #endregion
 }

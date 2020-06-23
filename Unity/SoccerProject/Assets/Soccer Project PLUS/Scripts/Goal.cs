@@ -7,6 +7,9 @@ public class Goal : MonoBehaviour
     public GoalKeeper goalKeeper;
     public InGame inGame;
 
+    public delegate void OnGoalDelegate();
+    public static event OnGoalDelegate goalEvent;
+
     #endregion Public Fields
 
     #region Private Methods
@@ -36,6 +39,9 @@ public class Goal : MonoBehaviour
 
             inGame.timeToChangeState = Globals.periodToChangeState;
             inGame.state = InGame.InGameState.GOAL;
+
+            // Notify subscribers
+            goalEvent?.Invoke();
         }
     }
 

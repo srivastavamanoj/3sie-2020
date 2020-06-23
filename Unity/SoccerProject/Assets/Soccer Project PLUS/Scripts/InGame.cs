@@ -89,6 +89,16 @@ public class InGame : MonoBehaviour
 
     #endregion Public Properties
 
+    #region Delegates and events    
+    public delegate void OnFirstHalfStartedDelegate();
+    public delegate void OnSecondHalfStartedDelegate();
+    public delegate void OnMatchFinishedDelegate();
+    public static event OnFirstHalfStartedDelegate firstHalfStartedEvent;
+    public static event OnSecondHalfStartedDelegate secondHalfStartedEvent;
+    public static event OnMatchFinishedDelegate matchFinishedEvent;
+    #endregion
+
+
     #region Private Methods
 
     private void PutPlayersInCornerArea(List<Player> arrayPlayers, Player.TypePlayer type)
@@ -155,10 +165,13 @@ public class InGame : MonoBehaviour
             switch (state)
             {
                 case InGameState.PLAYING:
-
-                    if (scorerTime.minutes > 44.0f && firstHalf == 0)
+                    
+                    if (scorerTime.minutes < 44.0f && firstHalf == 0)
                     {
                         firstHalf = 1;
+
+                        // Notify subscribers first half started
+                        firstHalfStartedEvent?.Invoke();
                     }
 
                     if (scorerTime.minutes > 45.0f && firstHalf == 1)
@@ -182,14 +195,21 @@ public class InGame : MonoBehaviour
                         scoredbylocal = true;
                         scoredbyvisiting = false;
                         state = InGameState.PREPARE_TO_KICK_OFF;
+
+                        // Notify subscribers second half started
+                        secondHalfStartedEvent?.Invoke();
                     }
 
                     if (scorerTime.minutes > 90.0f && firstHalf == 2)
                     {
-                        // Match is Over
+                        // Notify subscribers match finished
+                        matchFinishedEvent?.Invoke();
+
                         PlayerPrefs.SetInt("ScoreLocal", scoreLocal);
-                        PlayerPrefs.SetInt("ScoreVisit", scoreVisiting);                        
-                        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+                        PlayerPrefs.SetInt("ScoreVisit", scoreVisiting);           
+                        
+                        // Restart game
+                        SceneManager.LoadScene(SceneManager.GetActiveScene().name);                        
                     }
 
                     break;

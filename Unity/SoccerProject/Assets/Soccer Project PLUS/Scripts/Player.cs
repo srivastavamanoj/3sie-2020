@@ -9,6 +9,13 @@ public class Player : MonoBehaviour
 {
     public static Player kickOffer;
 
+    // Delegates and events
+    public delegate void OnPassDelegate();
+    public delegate void OnShootDelegate();
+    public static event OnPassDelegate passEvent;
+    public static event OnShootDelegate shootEvent;
+
+
     #region Public Fields
 
     public Vector3 actualVelocityPlayer;
@@ -135,6 +142,9 @@ public class Player : MonoBehaviour
                         }
 
                         Ball.owner = null;
+
+                        //Notify subscribers
+                        passEvent?.Invoke();
                     }
 
                     break;
@@ -167,6 +177,9 @@ public class Player : MonoBehaviour
                         float valueRndY = UnityEngine.Random.Range(4.0f, 10.0f);
                         ball.RB.velocity = new Vector3 (Globals.velocityShoot.x * forward.x, valueRndY, Globals.velocityShoot.z * forward.z) ;
                     }
+
+                    // Notify subscribers
+                    shootEvent?.Invoke();
                 }
 
                 break;
