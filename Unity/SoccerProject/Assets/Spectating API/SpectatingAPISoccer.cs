@@ -24,6 +24,8 @@ public class SpectatingAPISoccer : MonoBehaviour
     public delegate void OnFirstHalfStartedDelegate();
     public delegate void OnSecondHalfStartedDelegate();
     public delegate void OnMatchFinishedDelegate();
+    public delegate void OnThrowInDelegate();
+    public delegate void OnCornerDelegate();
 
     public static event OnGoalDelegate goalEvent;
     public static event OnPassDelegate passEvent;
@@ -31,6 +33,8 @@ public class SpectatingAPISoccer : MonoBehaviour
     public static event OnFirstHalfStartedDelegate firstHalfStartedEvent;
     public static event OnSecondHalfStartedDelegate secondHalfStartedEvent;
     public static event OnMatchFinishedDelegate matchFinishedEvent;
+    public static event OnThrowInDelegate throwInEvent;
+    public static event OnCornerDelegate cornerEvent;
 
 
     void Start()
@@ -40,13 +44,40 @@ public class SpectatingAPISoccer : MonoBehaviour
         ball = GameObject.Find("soccer_ball");
         ballScript = ball.GetComponent<Ball>();
 
-        //Subscription to different events 
+        //Subscribe to different events 
+        SubscribeToEvents();
+    }
+
+
+    private void OnDisable()
+    {
+        UnsubscribeToEvents();
+    }
+
+
+    private void SubscribeToEvents()
+    {
         Goal.goalEvent += OnGoal;
-        Player.passEvent += OnPass;
-        Player.shootEvent += OnShoot;
         InGame.firstHalfStartedEvent += OnFirstHalfStarted;
         InGame.secondHalfStartedEvent += OnSecondHalfStarted;
         InGame.matchFinishedEvent += OnMatchFinished;
+        Side.throwInEvent += OnThrowIn;
+        Corner.cornerEvent += OnCorner;
+        Player.passEvent += OnPass;
+        Player.shootEvent += OnShoot;
+    }
+
+
+    private void UnsubscribeToEvents()
+    {
+        Goal.goalEvent -= OnGoal;
+        InGame.firstHalfStartedEvent -= OnFirstHalfStarted;
+        InGame.secondHalfStartedEvent -= OnSecondHalfStarted;
+        InGame.matchFinishedEvent -= OnMatchFinished;
+        Side.throwInEvent -= OnThrowIn;
+        Corner.cornerEvent -= OnCorner;
+        Player.passEvent -= OnPass;
+        Player.shootEvent -= OnShoot;
     }
 
 
@@ -121,19 +152,7 @@ public class SpectatingAPISoccer : MonoBehaviour
     private void OnGoal()
     {
         goalEvent();
-    }
-
-
-    private void OnPass()
-    {
-        passEvent?.Invoke();
-    }
-
-
-    private void OnShoot()
-    {
-        shootEvent?.Invoke();
-    }
+    }   
 
 
     private void OnFirstHalfStarted()
@@ -156,14 +175,26 @@ public class SpectatingAPISoccer : MonoBehaviour
 
     private void OnCorner()
     {
-
+        cornerEvent?.Invoke();
     }
 
 
-    private void OnThrownIn()
+    private void OnThrowIn()
     {
+        throwInEvent?.Invoke();
+    }
 
-    }   
+
+    private void OnPass()
+    {
+        passEvent?.Invoke();
+    }
+
+
+    private void OnShoot()
+    {
+        shootEvent?.Invoke();
+    }
 
     #endregion
 }

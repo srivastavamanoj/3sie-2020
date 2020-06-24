@@ -19,6 +19,12 @@ public class Corner : MonoBehaviour
 
     #endregion Public Fields
 
+    #region Delegates and Events
+    public delegate void OnCornerDelegate();
+    public static event OnCornerDelegate cornerEvent;
+
+    #endregion
+
     #region Private Methods
 
     private void OnTriggerEnter(Collider other)
@@ -59,6 +65,9 @@ public class Corner : MonoBehaviour
                 }
 
                 inGame.state = InGame.InGameState.CORNER;
+
+                // Notify subscribers of corner event
+                cornerEvent?.Invoke();
             }
         }
     }

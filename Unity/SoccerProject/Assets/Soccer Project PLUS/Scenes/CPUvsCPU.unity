@@ -2663,7 +2663,7 @@ MonoBehaviour:
   minutes: 0
   seconds: 0
   timeMatch: 0
-  TRANSFORM_TIME: 60
+  TRANSFORM_TIME: 30
 --- !u!1 &918914504
 GameObject:
   m_ObjectHideFlags: 0

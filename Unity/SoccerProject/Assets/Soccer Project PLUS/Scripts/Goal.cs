@@ -28,6 +28,9 @@ public class Goal : MonoBehaviour
                 inGame.scoreLocal++;
                 inGame.scoredbylocal = true;
                 inGame.scoredbyvisiting = false;
+
+                // Notify subscribers that a goal was scored
+                goalEvent?.Invoke();
             }
 
             if (goalKeeper.team == inGame.team1 && inGame.state != InGame.InGameState.GOAL)
@@ -35,13 +38,13 @@ public class Goal : MonoBehaviour
                 inGame.scoreVisiting++;
                 inGame.scoredbylocal = false;
                 inGame.scoredbyvisiting = true;
+
+                // Notify subscribers that a goal was scored
+                goalEvent?.Invoke();
             }
 
             inGame.timeToChangeState = Globals.periodToChangeState;
-            inGame.state = InGame.InGameState.GOAL;
-
-            // Notify subscribers
-            goalEvent?.Invoke();
+            inGame.state = InGame.InGameState.GOAL;            
         }
     }
 

@@ -56,7 +56,7 @@ public class InGame : MonoBehaviour
     private static readonly int ThrowSide = Animator.StringToHash("ThrowSide");
     private float timeToKickOff = Globals.perdiodToKickOff;
     private float timeToThrowCPU = Globals.perdiodToThrowCPU;
-    private Player whoLastTouched;
+    private Player whoLastTouched;    
 
     #endregion Private Fields
 
@@ -155,7 +155,7 @@ public class InGame : MonoBehaviour
 
     // Update is called once per frame
     private void Update()
-    {
+    {        
         // little time between states
         timeToChangeState -= Time.deltaTime;
 
@@ -206,8 +206,8 @@ public class InGame : MonoBehaviour
                         matchFinishedEvent?.Invoke();
 
                         PlayerPrefs.SetInt("ScoreLocal", scoreLocal);
-                        PlayerPrefs.SetInt("ScoreVisit", scoreVisiting);           
-                        
+                        PlayerPrefs.SetInt("ScoreVisit", scoreVisiting);
+
                         // Restart game
                         SceneManager.LoadScene(SceneManager.GetActiveScene().name);                        
                     }
@@ -254,7 +254,8 @@ public class InGame : MonoBehaviour
                     trans.position = new Vector3(positionSide.x, trans.position.y, positionSide.z);
                     candidateToThrowIn.transform.LookAt(target_throw_in);
 
-                    if (!whoLastTouched.team.IsHuman)
+                    //if (!whoLastTouched.team.IsHuman)
+                    if (whoLastTouched.team.IsHuman)
                     {
                         target_throw_in += new Vector3(0, 0, inputManager.fHorizontal / 10.0f);
 
@@ -340,7 +341,8 @@ public class InGame : MonoBehaviour
 
                     candidateToThrowIn.transform.LookAt(ball.transform.position);
 
-                    if (!whoLastTouched.team.IsHuman)
+                    //if (!whoLastTouched.team.IsHuman)
+                    if (whoLastTouched.team.IsHuman)
                     {
                         if (inputManager.bPassButton)
                         {
@@ -355,7 +357,7 @@ public class InGame : MonoBehaviour
                         if (timeToThrowCPU < 0.0f)
                         {
                             timeToThrowCPU = Globals.perdiodToThrowCPU;
-                            ball.RB.isKinematic = true;
+                            //ball.RB.isKinematic = true;
                             state = InGameState.CORNER_DONE;
                         }
                     }
@@ -406,8 +408,8 @@ public class InGame : MonoBehaviour
 
                     //team1.players[0].animator.SetTrigger(Idle);
                     //team2.players[0].animator.SetTrigger(Idle);
-                    team1.players[0].animator.SetTrigger("Idle");
-                    team2.players[0].animator.SetTrigger("Idle");
+                    //team1.players[0].animator.SetTrigger("Idle");
+                    //team2.players[0].animator.SetTrigger("Idle");
 
                     timeToKickOff -= Time.deltaTime;
 
@@ -431,7 +433,7 @@ public class InGame : MonoBehaviour
                         go.moveAutomatic = true;
                         go.transform.position = go.initialPosition;
                     }
-
+                                        
                     team1.players[0].animator.Play("idle");
                     team2.players[0].animator.Play("idle");
 

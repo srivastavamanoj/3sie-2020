@@ -9,6 +9,13 @@ public class Side : MonoBehaviour
 
     #endregion Public Fields
 
+    #region Delegates and Events
+
+    public delegate void OnThrowInDelegate();
+    public static event OnThrowInDelegate throwInEvent;
+
+    #endregion
+
     #region Private Methods
 
     private void OnTriggerEnter(Collider other)
@@ -22,6 +29,9 @@ public class Side : MonoBehaviour
                 inGame.timeToChangeState = Globals.periodToChangeState;
                 inGame.state = InGame.InGameState.THROW_IN;
                 inGame.positionSide = ball.transform.position;
+
+                // Notify subscribers of throw in event
+                throwInEvent?.Invoke();
             }
             else
             {
