@@ -24,6 +24,15 @@ public class SpectatingAPISoccer : MonoBehaviour
         public float speed;        
     }
 
+    public struct PlayerMatchStats
+    {
+        public int id;                
+        public int passes;
+        public int shoots;
+        public int goals;
+        //public int ownGoals;  // TO DO
+    }
+
     // Player animator states    
     public static readonly int ps_idle = Animator.StringToHash("idle");
     public static readonly int ps_pass = Animator.StringToHash("pass");
@@ -75,7 +84,14 @@ public class SpectatingAPISoccer : MonoBehaviour
     private GameObject ball;
     private Ball ballScript;    
     private Dictionary<int, PlayerInfo> allPlayersInfoDic;
-    
+    private Dictionary<int, PlayerMatchStats> allPlayersStatsDic;
+    private enum playerStatsType
+    {
+        Pass,
+        Shoot,
+        Goal
+    }
+
 
 
     void Start()
@@ -93,8 +109,9 @@ public class SpectatingAPISoccer : MonoBehaviour
         goalkeeperStatesDic = new Dictionary<int, string>();
         InitPlayersStates();
 
-        // Initialize dictionary of players info
+        // Initialize dictionaries of players info and players stats
         allPlayersInfoDic = new Dictionary<int, PlayerInfo>();
+        allPlayersStatsDic = new Dictionary<int, PlayerMatchStats>();
         InitPlayersInfo();
     }
 
@@ -163,27 +180,34 @@ public class SpectatingAPISoccer : MonoBehaviour
         int numPlayersT1 = inGame.team1.players.Count;
         int numPlayersT2 = inGame.team2.players.Count;
         
-        foreach (Player player in inGame.team1.players)
-        //for (int i = 0; i < numPlayersT1; i++)        
-        {
-            //Player player = inGame.team1.players[i];
-            player.uniqueId = counter;            
-            PlayerInfo tempPlayerInfo;
-            tempPlayerInfo.id = counter;
-            tempPlayerInfo.gameObj = player.gameObject;
-            tempPlayerInfo.name = player.gameObject.name;
-            tempPlayerInfo.team = player.gameObject.transform.parent.gameObject.name;
-            tempPlayerInfo.type = player.type;
-            tempPlayerInfo.speed = player.Speed;
-            tempPlayerInfo.stamina = player.stamina;
-            allPlayersInfoDic.Add(counter, tempPlayerInfo);
+        foreach (Player player in inGame.team1.players)               
+        {            
+            player.uniqueId = counter;
+
+            // Player info
+            PlayerInfo playerInfo;
+            playerInfo.id = counter;
+            playerInfo.gameObj = player.gameObject;
+            playerInfo.name = player.gameObject.name;
+            playerInfo.team = player.gameObject.transform.parent.gameObject.name;
+            playerInfo.type = player.type;
+            playerInfo.speed = player.Speed;
+            playerInfo.stamina = player.stamina;
+            allPlayersInfoDic.Add(counter, playerInfo);
+
+            // Player match stats
+            PlayerMatchStats playerStats;
+            playerStats.id = counter;                      
+            playerStats.passes = 0;
+            playerStats.shoots = 0;
+            playerStats.goals = 0;
+            allPlayersStatsDic.Add(counter, playerStats);
+
             counter++;
         }
 
-        foreach (Player player in inGame.team2.players)
-        //for (int i = 0; i < numPlayersT2; i++)
-        {
-            //Player player = inGame.team2.players[i];
+        foreach (Player player in inGame.team2.players)        
+        {            
             player.uniqueId = counter;
             PlayerInfo tempPlayerInfo;
             tempPlayerInfo.id = player.uniqueId;
@@ -194,7 +218,53 @@ public class SpectatingAPISoccer : MonoBehaviour
             tempPlayerInfo.speed = player.Speed;
             tempPlayerInfo.stamina = player.stamina;
             allPlayersInfoDic.Add(counter, tempPlayerInfo);
+
+            // Player match stats
+            PlayerMatchStats playerStats;
+            playerStats.id = counter;
+            playerStats.passes = 0;
+            playerStats.shoots = 0;
+            playerStats.goals = 0;
+            allPlayersStatsDic.Add(counter, playerStats);
+
             counter++;
+        }
+    }
+
+
+    private void AddToPlayerStats(playerStatsType type)
+    {
+        GameObject aPlayer = GetLastPlayerWithBall();
+        
+        if (!aPlayer)
+            aPlayer = GetBallOwner();
+        
+        if (aPlayer != null)
+        {
+            int id = GetPlayerUniqueId(aPlayer);
+            if (id > -1)
+            {
+                if (allPlayersStatsDic.ContainsKey(id))
+                {
+                    PlayerMatchStats playerStats = allPlayersStatsDic[id];
+                    if (type == playerStatsType.Goal)
+                        playerStats.goals += 1;
+                    else if (type == playerStatsType.Pass)
+                        playerStats.passes += 1;
+                    else if (type == playerStatsType.Shoot)
+                        playerStats.shoots += 1;
+
+                    allPlayersStatsDic[id] = playerStats;
+                }
+                else
+                {
+                    Debug.LogError("allPlayersStatatsDic doesn't contain id: " + id);
+                }        
+            }
+        }
+        else
+        {
+            Debug.Log("Last player with ball returned null...");    // Should only occur at start of the match
         }
     }
 
@@ -234,7 +304,7 @@ public class SpectatingAPISoccer : MonoBehaviour
     // Returns the number of goals by the local team (team 1)
     public int GetScoreLocalTeam()
     {
-        return inGame.scoreVisiting;
+        return inGame.scoreLocal;
     }
 
 
@@ -255,14 +325,24 @@ public class SpectatingAPISoccer : MonoBehaviour
     // Returns game object of player who last touched the ball
     public GameObject GetLastPlayerWithBall()
     {
-        return inGame.lastTouched.gameObject;
+        GameObject go = null;
+
+        if (inGame.lastTouched)
+            go = inGame.lastTouched.gameObject;
+
+        return go;
     }
 
 
     // Returns game object of player that currently owns the ball or null if nobody owns the ball
     public GameObject GetBallOwner()
     {
-        return Ball.owner.gameObject;
+        GameObject go = null;
+
+        if (Ball.owner)
+            go = Ball.owner.gameObject;
+
+        return go;
     }
     #endregion
 
@@ -270,8 +350,12 @@ public class SpectatingAPISoccer : MonoBehaviour
     #region Game Event Callbacks
     private void OnGoal()
     {
-        goalEvent();
-    }   
+        // Add goal to player stats   
+        AddToPlayerStats(playerStatsType.Goal);
+
+        // Notify subscribers that a goal has been scored
+        goalEvent?.Invoke();
+    }    
 
 
     private void OnFirstHalfStarted()
@@ -306,55 +390,71 @@ public class SpectatingAPISoccer : MonoBehaviour
 
     private void OnPass()
     {
+        // Add goal to player stats   
+        AddToPlayerStats(playerStatsType.Pass);
+
+        // Notify subscribers
         passEvent?.Invoke();
     }
 
 
     private void OnShoot()
     {
+        // Add goal to player stats   
+        AddToPlayerStats(playerStatsType.Shoot);
+
+        // Notify subscribers
         shootEvent?.Invoke();
     }
-
     #endregion
 
 
     #region Accessing Player Data
-
+    // Returns player id
     public int GetPlayerUniqueId(GameObject go)
     {
         int id = -1;
         Player player = go.GetComponent<Player>(); 
-        if (player != null)
-        {
-            id = player.uniqueId;
-        }
-        else
-        {
-            Debug.Log("Game Object is not a player...");
-        }
+
+        if (player != null)        
+            id = player.uniqueId;        
+        else        
+            Debug.LogError("Game Object is not a player...");
+        
         return id;
     }
 
 
+    // Returns player id
     public int GetPlayerUniqueId(string name)
     {
         int id = -1;
         GameObject go = GameObject.Find(name);
+        
         if (go != null)
             id = GetPlayerUniqueId(go);
         else
-            Debug.Log("Game object with name " + name + " was not found...");
+            Debug.LogError("Game object with name " + name + " was not found...");
                 
         return id;
     }
 
 
+    // Returns a struct with player info (id, gameobject, name, team, type, stamina, speed)
     public PlayerInfo GetPlayerInfo(int playerId)
     {
-        return allPlayersInfoDic[playerId];
+        PlayerInfo playerInfo = new PlayerInfo();
+
+        if (allPlayersInfoDic.ContainsKey(playerId))
+            playerInfo = allPlayersInfoDic[playerId];
+        else
+            Debug.LogError("allPlayersInfoDic does not contain id " + playerId);
+
+        return playerInfo;
     }
 
 
+    // Returns a struct with player info (id, gameobject, name, team, type, stamina, speed)
     public PlayerInfo GetPlayerInfo(GameObject goPlayer)
     {
         int id = GetPlayerUniqueId(goPlayer);
@@ -362,7 +462,21 @@ public class SpectatingAPISoccer : MonoBehaviour
     }
 
 
-    // Returns the player state name (based on the animator controller)
+    // Returns the player's transform
+    public Transform GetPlayerTransform(int playerId)
+    {
+        Transform t = null;
+
+        if (allPlayersInfoDic.ContainsKey(playerId))
+            t = allPlayersInfoDic[playerId].gameObj.transform;
+        else
+            Debug.LogError("allPlayersInfoDic does not contains key: " + playerId);
+
+        return t;
+    }
+
+
+    // Returns the player's state name (based on the animator controller states)
     public string GetPlayerState(int playerId)
     {
         string state = "State not found";
@@ -371,32 +485,55 @@ public class SpectatingAPISoccer : MonoBehaviour
         Player.TypePlayer playerType = allPlayersInfoDic[playerId].type;
 
         if (playerType == Player.TypePlayer.GOALKEEPER)
-        {            
+        {
             if (goalkeeperStatesDic.ContainsKey(hash))
-                state = goalkeeperStatesDic[hash];            
+                state = goalkeeperStatesDic[hash];   
         }
         else
-        {
-            Debug.Log(allPlayersInfoDic[playerId].name);
+        {            
             if (playerStatesDic.ContainsKey(hash))
-                state = playerStatesDic[hash];            
+                state = playerStatesDic[hash];
         }
         
         return state;
     }
 
 
+    // Returns the dictionary that contains the PlayerInfo struct for all players
     public Dictionary<int, PlayerInfo> GetAllPlayersInfoDic()
     {        
         return allPlayersInfoDic;
     }
 
 
+    // Returns a list of PlayerInfo structs for all players
     public List<PlayerInfo> GetAllPlayersInfoList()
     {
         List<PlayerInfo> allPlayersInfoList = new List<PlayerInfo>(allPlayersInfoDic.Values);
         return allPlayersInfoList;
     }
+    #endregion
 
+
+    #region Accessing player match performance stats
+    // Returns a struct with the player's statistics during the match
+    public PlayerMatchStats GetPlayerStats(int id)
+    {
+        PlayerMatchStats playerStats = new PlayerMatchStats();
+
+        if (allPlayersStatsDic.ContainsKey(id))
+            playerStats = allPlayersStatsDic[id];
+        else
+            Debug.LogError("allPlayersStatsDic doesn't contain key: " + id);
+
+        return playerStats;
+    }
+
+
+    public List<PlayerMatchStats> GetAllPlayersStatsList()
+    {
+        List<PlayerMatchStats> allPlayersStatsList = new List<PlayerMatchStats>(allPlayersStatsDic.Values);
+        return allPlayersStatsList;
+    }
     #endregion
 }

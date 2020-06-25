@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class TestSpectatingAPI : MonoBehaviour
 {
-    SpectatingAPISoccer specApi;
+    private SpectatingAPISoccer specApi;
 
     
     void Start()
@@ -24,11 +24,29 @@ public class TestSpectatingAPI : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Alpha0))
+        if (Input.GetKeyDown(KeyCode.Alpha1))
+            TestAccessGameData();
+
+        if (Input.GetKeyDown(KeyCode.Alpha2))
             TestGetPlayerState("GK_T1_N1");
 
-        if (Input.GetKeyDown(KeyCode.Alpha1))
-            TestGetPlayerState("GK_T2_N1");
+        if (Input.GetKeyDown(KeyCode.Alpha3))
+            TestGetPlayerState("P_T1_N4");
+
+        if (Input.GetKeyDown(KeyCode.Alpha4))
+            TestGetPlayerInfo();
+
+        if (Input.GetKeyDown(KeyCode.Alpha5))
+            TestGetPlayerInfoList();
+
+        if (Input.GetKeyDown(KeyCode.Alpha6))
+            TestGetPlayerTransform();
+
+        if (Input.GetKeyDown(KeyCode.Alpha7))
+            TestGetPlayerStats();
+
+        if (Input.GetKeyDown(KeyCode.Alpha8))
+            TestGetPlayerStatsList();
     }
 
 
@@ -58,70 +76,182 @@ public class TestSpectatingAPI : MonoBehaviour
     }
 
 
+    #region Test Accessing Game Data
+    private void TestAccessGameData()
+    {
+        InGame.InGameState gameState = specApi.GetGameState();
+        Debug.Log("Game State: " + gameState.ToString());
+
+        float matchElapsedTime = specApi.GetMatchElapsedTime();
+        Debug.Log("Match elapsed time in seconds: " + matchElapsedTime);
+
+        SpectatingAPISoccer.MatchClock matchClock = specApi.GetMatchClock();
+        Debug.Log("Minutes: " + matchClock.mins + "     seconds: " + matchClock.secs);
+
+        int scoreVisitingTeam = specApi.GetScoreVisitingTeam();
+        int scoreLocalTeam = specApi.GetScoreLocalTeam();
+        Debug.Log("Score: local team " + scoreLocalTeam + "     visiting team: " + scoreVisitingTeam);
+
+        int matchHalf = specApi.GetMatchHalf();
+        Debug.Log("Match half: " + matchHalf);
+
+        Transform ball = specApi.GetBallTransform();
+        Debug.Log("Ball position: " + ball.position.ToString());
+
+        GameObject lastPlayerWithBall = specApi.GetLastPlayerWithBall();
+        if (lastPlayerWithBall)
+            Debug.Log("Last player with ball: " + lastPlayerWithBall.name);
+        else
+            Debug.Log("Last player with ball: none");
+
+        GameObject ballOwner = specApi.GetBallOwner();
+        if (ballOwner)
+            Debug.Log("Current ball owner: " + ballOwner.name);
+        else
+            Debug.Log("Current ball owner: none");
+
+        Debug.Log("----------");
+    }
+    #endregion
+
+
     #region Testing Event Callbacks
     private void TestOnGoal()
     {
         GameObject aPlayer = specApi.GetLastPlayerWithBall();
 
-        Debug.Log("A Goal was just scored... 000");
+        Debug.Log("Event: a goal was just scored... 000");
         Debug.Log("The name of the player that score is: " + aPlayer.name);
     }   
 
 
     private void TestOnFirstHalfStarted()
     {
-        Debug.Log("First half started... 111");
+        Debug.Log("Event: first half started... 111");
     }
 
 
     private void TestOnSecondHalfStarted()
     {
-        Debug.Log("Second half started... 222");
+        Debug.Log("Event: second half started... 222");
     }
 
 
     private void TestOnMatchFinished()
     {
-        Debug.Log("Match has finished... 333");
+        Debug.Log("Event: match has finished... 333");
     }
 
 
     private void TestOnThrowIn()
     {
-        Debug.Log("Throw in event... 444");
+        Debug.Log("Event: throw in... 444");
     }
 
 
     private void TestOnCorner()
     {
-        Debug.Log("Corner kick or goal kick event... 555");
+        Debug.Log("Event: Corner kick or goal kick... 555");
     }
 
 
     private void TestOnPass()
     {
-        //Debug.Log("A pass was made... 66");
+        //Debug.Log("Event: a pass was made... 66");
     }
 
 
     private void TestOnShoot()
     {
-        //Debug.Log("A shoot was made... 777");
+        //Debug.Log("Event: a shoot was made... 777");
     }
-
     #endregion
 
 
     #region Testing Access to Player Data
-
     private void TestGetPlayerState(string name)
-    {
+    {        
         int id = specApi.GetPlayerUniqueId(name);
-        string playerStateName = specApi.GetPlayerState(id);
-        Debug.Log("Player id: " + id + "     name: " + name + "     current state: " + playerStateName);
+        if (id > -1)
+        {
+            string playerStateName = specApi.GetPlayerState(id);
+            Debug.Log("Player id: " + id + "     name: " + name + "     current state: " + playerStateName);
+        }
     }
 
-    
 
+    private void TestGetPlayerInfo()
+    {
+        int id = 7;
+        SpectatingAPISoccer.PlayerInfo playerInfo;        
+        playerInfo = specApi.GetPlayerInfo(id);
+        PrintPlayerInfo(playerInfo);        
+    }
+
+
+    private void TestGetPlayerInfoList()
+    {
+        List<SpectatingAPISoccer.PlayerInfo> playersInfoList = specApi.GetAllPlayersInfoList();
+        foreach (SpectatingAPISoccer.PlayerInfo playerInf in playersInfoList)
+        {
+            PrintPlayerInfo(playerInf);
+        }
+    }
+
+
+    private void PrintPlayerInfo(SpectatingAPISoccer.PlayerInfo playerInfo)
+    {
+        Debug.Log("playerInfo.id   " + playerInfo.id);
+        Debug.Log("playerInfo.gameObj   " + playerInfo.gameObj.name);
+        Debug.Log("playerInfo.name   " + playerInfo.name);
+        Debug.Log("playerInfo.team   " + playerInfo.team);
+        Debug.Log("playerInfo.type   " + playerInfo.type.ToString());
+        Debug.Log("playerInfo.stamina   " + playerInfo.stamina);
+        Debug.Log("playerInfo.speed   " + playerInfo.speed);
+        Debug.Log("-----------");
+    }
+
+
+    private void TestGetPlayerTransform()
+    {
+        int playerId = 15;
+        Transform playerT = specApi.GetPlayerTransform(playerId);
+        Debug.Log("Player id: " + playerId + "     position: " + playerT.position.ToString());
+        Debug.Log("Player id: " + playerId + "     rotation: " + playerT.rotation.eulerAngles.ToString());
+        Debug.Log("Player id: " + playerId + "     local scale: " + playerT.localScale.ToString());
+    }
+
+    #endregion
+
+    #region Testing Access to Player Stats
+
+    private void TestGetPlayerStats()
+    {
+        int playerId = 9;
+        SpectatingAPISoccer.PlayerMatchStats playerStats;
+        playerStats = specApi.GetPlayerStats(playerId);
+
+        PrintPlayerStats(playerStats);
+    }
+
+
+    private void TestGetPlayerStatsList()
+    {
+        List<SpectatingAPISoccer.PlayerMatchStats> playersStatsList = specApi.GetAllPlayersStatsList();
+        foreach (SpectatingAPISoccer.PlayerMatchStats playerStats in playersStatsList)
+        {
+            PrintPlayerStats(playerStats);
+        }
+    }
+
+
+    private void PrintPlayerStats(SpectatingAPISoccer.PlayerMatchStats playerStats)
+    {
+        Debug.Log("Player id: " + playerStats.id);
+        Debug.Log("Player passes: " + playerStats.passes);
+        Debug.Log("Player shoots: " + playerStats.shoots);
+        Debug.Log("Player goals: " + playerStats.goals);
+        Debug.Log("-----------");
+    }
     #endregion
 }

@@ -464,7 +464,7 @@ public class InGame : MonoBehaviour
                         passer.transform.LookAt(ballPos);
                         passed.transform.position = passer.transform.position + (passer.transform.forward * 5.0f);
                         Player.kickOffer = passer;
-                        Ball.owner = passer;
+                        Ball.owner = passer;                        
                     }
 
                     if (scoredbylocal)
