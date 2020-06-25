@@ -286,9 +286,7 @@ public class InGame : MonoBehaviour
 
                 case InGameState.CORNER:
 
-                    whoLastTouched = lastTouched;
-
-                    //whoLastTouched = team2.players[0];
+                    whoLastTouched = lastTouched;                    
 
                     if (!cornerTrigger.CompareTag(whoLastTouched.tag))
                     {
@@ -340,8 +338,7 @@ public class InGame : MonoBehaviour
                 case InGameState.CORNER_CHASING:
 
                     candidateToThrowIn.transform.LookAt(ball.transform.position);
-
-                    //if (!whoLastTouched.team.IsHuman)
+                    
                     if (whoLastTouched.team.IsHuman)
                     {
                         if (inputManager.bPassButton)
@@ -380,13 +377,11 @@ public class InGame : MonoBehaviour
                     goalKeeperToAct.animator.SetTrigger(ThowOutFoot);
 
                     foreach (Player go in team1.players)
-                    {
-                        //go.animator.Play("Idle");
+                    {                        
                         go.animator.Play("idle");
                     }
                     foreach (Player go in team2.players)
-                    {
-                        //go.animator.Play("Idle");
+                    {                        
                         go.animator.Play("idle");
                     }
 
@@ -404,12 +399,7 @@ public class InGame : MonoBehaviour
                     foreach (Player go in team2.players)
                     {
                         go.animator.Play("idle");
-                    }
-
-                    //team1.players[0].animator.SetTrigger(Idle);
-                    //team2.players[0].animator.SetTrigger(Idle);
-                    //team1.players[0].animator.SetTrigger("Idle");
-                    //team2.players[0].animator.SetTrigger("Idle");
+                    }                    
 
                     timeToKickOff -= Time.deltaTime;
 

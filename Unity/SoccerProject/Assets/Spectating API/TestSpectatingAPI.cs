@@ -4,13 +4,15 @@ using UnityEngine;
 
 public class TestSpectatingAPI : MonoBehaviour
 {
-    private SpectatingAPISoccer specApi;
+    private SpectatingAPISoccer specApi;    
+    private SpectatingCamera specCamScript;
 
     
     void Start()
     {
         specApi = GameObject.Find("SpectatingAPI").GetComponent<SpectatingAPISoccer>();
-
+        specCamScript = GameObject.Find("SpectatingCamera").GetComponent<SpectatingCamera>();
+        
         // Subscribe to events on spectating API 
         SubscribeToAPIEvents();
     }
@@ -28,25 +30,28 @@ public class TestSpectatingAPI : MonoBehaviour
             TestAccessGameData();
 
         if (Input.GetKeyDown(KeyCode.Alpha2))
-            TestGetPlayerState("GK_T1_N1");
+            TestGetPlayerState("GK_T1_N1");        
 
         if (Input.GetKeyDown(KeyCode.Alpha3))
-            TestGetPlayerState("P_T1_N4");
-
-        if (Input.GetKeyDown(KeyCode.Alpha4))
             TestGetPlayerInfo();
 
-        if (Input.GetKeyDown(KeyCode.Alpha5))
+        if (Input.GetKeyDown(KeyCode.Alpha4))
             TestGetPlayerInfoList();
 
-        if (Input.GetKeyDown(KeyCode.Alpha6))
+        if (Input.GetKeyDown(KeyCode.Alpha5))
             TestGetPlayerTransform();
 
-        if (Input.GetKeyDown(KeyCode.Alpha7))
+        if (Input.GetKeyDown(KeyCode.Alpha6))
             TestGetPlayerStats();
 
-        if (Input.GetKeyDown(KeyCode.Alpha8))
+        if (Input.GetKeyDown(KeyCode.Alpha7))
             TestGetPlayerStatsList();
+
+        if (Input.GetKeyDown(KeyCode.Alpha8))
+            TestSpectatingCam();
+
+        if (Input.GetKeyDown(KeyCode.Alpha9))
+            TestSwapCamera();
     }
 
 
@@ -176,6 +181,7 @@ public class TestSpectatingAPI : MonoBehaviour
         {
             string playerStateName = specApi.GetPlayerState(id);
             Debug.Log("Player id: " + id + "     name: " + name + "     current state: " + playerStateName);
+            Debug.Log("----------");
         }
     }
 
@@ -219,12 +225,12 @@ public class TestSpectatingAPI : MonoBehaviour
         Debug.Log("Player id: " + playerId + "     position: " + playerT.position.ToString());
         Debug.Log("Player id: " + playerId + "     rotation: " + playerT.rotation.eulerAngles.ToString());
         Debug.Log("Player id: " + playerId + "     local scale: " + playerT.localScale.ToString());
+        Debug.Log("-----------");
     }
-
     #endregion
 
-    #region Testing Access to Player Stats
 
+    #region Testing Access to Player Stats
     private void TestGetPlayerStats()
     {
         int playerId = 9;
@@ -252,6 +258,26 @@ public class TestSpectatingAPI : MonoBehaviour
         Debug.Log("Player shoots: " + playerStats.shoots);
         Debug.Log("Player goals: " + playerStats.goals);
         Debug.Log("-----------");
+    }
+    #endregion
+
+
+    #region Test Spectating Camera
+    private void TestSpectatingCam()
+    {
+        Transform targetToLookAt = specApi.GetBallTransform();
+        Transform positionRef = specApi.GetLastPlayerWithBall().transform;
+
+        specCamScript.SetTargetToLook(targetToLookAt);
+        specCamScript.SetPositionReference(positionRef);
+        specCamScript.isEnabled = true;
+        specCamScript.lookAtTarget = true;
+    }
+
+
+    private void TestSwapCamera()
+    {        
+        specCamScript.SwapCamera();
     }
     #endregion
 }

@@ -5,8 +5,7 @@ public class RunGK : StateMachineBehaviour
     #region Private Fields
 
     private static readonly int DirStrafeX = Animator.StringToHash("dir_strafe_x");
-    private static readonly int DirStrafeZ = Animator.StringToHash("dir_strafe_z");
-    //private static readonly int Idle = Animator.StringToHash("idle");
+    private static readonly int DirStrafeZ = Animator.StringToHash("dir_strafe_z");    
     private static readonly int Idle = Animator.StringToHash("Idle");
     private Ball ball;
     private CapsuleCollider capsuleCollider;

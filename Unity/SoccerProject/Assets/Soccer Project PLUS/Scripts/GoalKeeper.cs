@@ -4,8 +4,7 @@ public class GoalKeeper : Player
 {
 
     #region Public Fields
-
-    //public static readonly int IdleGK = Animator.StringToHash("idle");
+    
     public static readonly int IdleGK = Animator.StringToHash("Idle");
 
     #endregion Public Fields
@@ -25,7 +24,7 @@ public class GoalKeeper : Player
 
     #region Public Methods
 
-    //public void CornerGKSequence(int indexDirection)
+    
     public new void CornerGKSequence(int indexDirection)
     {
         dirThrowOutFoot = indexDirection;
