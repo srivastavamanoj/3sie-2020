@@ -63,9 +63,8 @@ public class Team : MonoBehaviour
 
         Ball.lastCandidatePlayer = candidatePlayer;
     }
-
-    // Start is called before the first frame update
-    private void Start()
+    
+    private void Awake()
     {
         var childsNumber = transform.childCount;
         for (int i = 0; i < childsNumber; i++)

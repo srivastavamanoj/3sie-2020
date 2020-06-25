@@ -56,7 +56,7 @@ public class InGame : MonoBehaviour
     private static readonly int ThrowSide = Animator.StringToHash("ThrowSide");
     private float timeToKickOff = Globals.perdiodToKickOff;
     private float timeToThrowCPU = Globals.perdiodToThrowCPU;
-    private Player whoLastTouched;    
+    private Player whoLastTouched;
 
     #endregion Private Fields
 

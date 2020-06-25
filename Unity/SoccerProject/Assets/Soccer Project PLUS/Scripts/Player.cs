@@ -40,6 +40,8 @@ public class Player : MonoBehaviour
     public Vector3 oldVelocityPlayer { get; set; }
     public bool moveAutomatic { get; set; } = false;
     public int dirCorner { get; set; }
+    public int uniqueId { get; set; }
+    
 
     #endregion Public Properties
 
@@ -52,15 +54,16 @@ public class Player : MonoBehaviour
     public float timeToRemove = Globals.periodToRemove;
     public CapsuleCollider capsuleCollider { get; private set; }
     public bool go_origin { get; set; }
+    // Animator parameters
     public static readonly int Pass = Animator.StringToHash("Pass");
     public static readonly int Shoot = Animator.StringToHash("Shoot");
     public static readonly int Tackle = Animator.StringToHash("Tackle");
     public static readonly int Idle = Animator.StringToHash("Idle");
     public static readonly int Run = Animator.StringToHash("Run");
     public static readonly int RunWithBall = Animator.StringToHash("RunWithBall");
+
     private Color originalColor;
-    private float posYfloor;
-    
+    private float posYfloor;    
 
     #endregion Private Fields
 
@@ -186,7 +189,7 @@ public class Player : MonoBehaviour
         }
     }
 
-    #endregion Events Methods
+    #endregion Events Methods    
 
     #region Private Methods
 

@@ -22,6 +22,16 @@ public class TestSpectatingAPI : MonoBehaviour
     }
 
 
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Alpha0))
+            TestGetPlayerState("GK_T1_N1");
+
+        if (Input.GetKeyDown(KeyCode.Alpha1))
+            TestGetPlayerState("GK_T2_N1");
+    }
+
+
     private void SubscribeToAPIEvents()
     {
         SpectatingAPISoccer.goalEvent += TestOnGoal;
@@ -98,6 +108,20 @@ public class TestSpectatingAPI : MonoBehaviour
     {
         //Debug.Log("A shoot was made... 777");
     }
+
+    #endregion
+
+
+    #region Testing Access to Player Data
+
+    private void TestGetPlayerState(string name)
+    {
+        int id = specApi.GetPlayerUniqueId(name);
+        string playerStateName = specApi.GetPlayerState(id);
+        Debug.Log("Player id: " + id + "     name: " + name + "     current state: " + playerStateName);
+    }
+
+    
 
     #endregion
 }

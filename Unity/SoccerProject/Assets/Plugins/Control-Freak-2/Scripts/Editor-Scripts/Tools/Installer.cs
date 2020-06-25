@@ -211,7 +211,7 @@ public class Installer : EditorWindow
 
 		if (!prefs.wasShown || (prefs.installedVer != CF2_INSTALLER_VERSION))
 			{
-			ShowInstallerWindow();
+			//ShowInstallerWindow();
 			}
 
 		}
