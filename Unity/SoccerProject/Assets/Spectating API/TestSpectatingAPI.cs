@@ -81,7 +81,7 @@ public class TestSpectatingAPI : MonoBehaviour
     }
 
 
-    #region Test Accessing Game Data
+    #region Testing Access to Game Data
     private void TestAccessGameData()
     {
         InGame.InGameState gameState = specApi.GetGameState();

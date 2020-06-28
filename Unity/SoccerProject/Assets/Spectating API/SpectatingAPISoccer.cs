@@ -101,7 +101,7 @@ public class SpectatingAPISoccer : MonoBehaviour
         ball = GameObject.Find("soccer_ball");
         ballScript = ball.GetComponent<Ball>();        
 
-        //Subscribe to different events 
+        //Subscribe to different events in other scripts 
         SubscribeToEvents();
 
         // Initialize dictioanary of players states
