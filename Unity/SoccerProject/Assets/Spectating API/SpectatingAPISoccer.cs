@@ -284,7 +284,7 @@ public class SpectatingAPISoccer : MonoBehaviour
     }
 
 
-    // Returns a structure wiht the time of the match (minutes and seconds)
+    // Returns a structure with the time of the match (minutes and seconds)
     public MatchClock GetMatchClock()
     {
         MatchClock matchClock = new MatchClock();
@@ -390,7 +390,7 @@ public class SpectatingAPISoccer : MonoBehaviour
 
     private void OnPass()
     {
-        // Add goal to player stats   
+        // Add pass to player stats   
         AddToPlayerStats(playerStatsType.Pass);
 
         // Notify subscribers
@@ -400,7 +400,7 @@ public class SpectatingAPISoccer : MonoBehaviour
 
     private void OnShoot()
     {
-        // Add goal to player stats   
+        // Add shoot to player stats   
         AddToPlayerStats(playerStatsType.Shoot);
 
         // Notify subscribers
@@ -530,6 +530,7 @@ public class SpectatingAPISoccer : MonoBehaviour
     }
 
 
+    // Returns a list of PlayerMatchStats structs for all players
     public List<PlayerMatchStats> GetAllPlayersStatsList()
     {
         List<PlayerMatchStats> allPlayersStatsList = new List<PlayerMatchStats>(allPlayersStatsDic.Values);

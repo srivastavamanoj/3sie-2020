@@ -55,6 +55,7 @@ public class SpectatingCamera : MonoBehaviour
     }
 
 
+    // Toggles between the main camera and the spectating camera
     public void SwapCamera()
     {
         if (isEnabled)
@@ -64,6 +65,7 @@ public class SpectatingCamera : MonoBehaviour
     }
 
 
+    // Enables the main camera and disables the spectating camera
     public void ShowMainCamera()
     {
         mainCam.enabled = true;
@@ -76,6 +78,7 @@ public class SpectatingCamera : MonoBehaviour
     }
 
 
+    // Enables the spectating camera and disables the main camera
     public void ShowSpectatingCamera()
     {
         mainCam.enabled = false;
@@ -88,15 +91,16 @@ public class SpectatingCamera : MonoBehaviour
     }
 
 
+    // Set the transform that the spectating camera will be using as a reference for its position
     public void SetPositionReference(Transform posRef)
     {
         positionReference = posRef;
     }
 
 
-
-    public void SetTargetToLook(Transform atargetToLook)
+    // Set the transform that the spectating camera will be looking at
+    public void SetTargetToLook(Transform aTargetToLook)
     {
-        targetTransform = atargetToLook;
+        targetTransform = aTargetToLook;
     }
 }
